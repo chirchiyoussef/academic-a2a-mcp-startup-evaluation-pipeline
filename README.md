@@ -1,29 +1,76 @@
-# Startup Idea Validation Multi-Agent System
+# 🚀 Startup Idea Validation Multi-Agent System
 
-## Overview
-
-This project is presented as an academic work whose purpose is to demonstrate practical control over **agentic AI systems**, **multi-agent collaboration**, and **MCP / A2A-style workflows**.
-
-Its objective is to help people who are thinking about launching a startup gain a clearer vision of their idea by evaluating it across three main dimensions:
-
-1. **Innovation and existing solutions**
-2. **Operational feasibility and MVP design**
-3. **Financial viability**
-
-Rather than acting as a perfectly accurate decision-maker, the system is designed as a **guided approximation tool**. Its purpose is to accelerate research, structure uncertainty, and provide a user with a first serious overview of what their startup idea may involve.
+<p align="center">
+  <strong>Academic multi-agent AI project for startup idea evaluation</strong><br>
+  Agentic AI · MCP / A2A-style workflows · Startup research · MVP planning · Financial projection
+</p>
 
 ---
 
-## Global Pipeline
+## 📌 Overview
 
-The system is organized into four stages:
+This project is an **academic work** built to demonstrate practical control over:
 
-1. **Innovation and existing solutions analysis**
-2. **MVP design, operational needs, and legal compliance**
-3. **Financial analysis and projection**
-4. **Final JSON report generation and validation**
+- 🧠 **Agentic AI systems**
+- 🤝 **Multi-agent collaboration**
+- 🔌 **MCP / A2A-style communication workflows**
+- 🔎 **Automated startup research and evaluation**
 
-### Global Architecture
+The system helps a user who is thinking about launching a startup gain a clearer first view of the idea by evaluating it across three major dimensions:
+
+| Dimension | Goal |
+|---|---|
+| 🟦 **Innovation and existing solutions** | Check whether similar companies or products already exist. |
+| 🟩 **Operational feasibility and MVP design** | Estimate what a first version of the product could look like and what it may require. |
+| 🟨 **Financial viability** | Estimate costs, revenues, assumptions, and basic financial feasibility. |
+
+> [!IMPORTANT]
+> This project is **not designed to be a perfectly accurate business decision-maker**.  
+> It is a **guided approximation tool** whose goal is to accelerate research, organize uncertainty, and give the user a first serious overview of a startup idea.
+
+---
+
+## 🧭 Project at a Glance
+
+| Item | Description |
+|---|---|
+| 🎯 **Main purpose** | Help evaluate startup ideas through a structured multi-agent pipeline. |
+| 🧱 **Architecture** | Three major analysis parts followed by a final report-generation stage. |
+| 🤖 **Agent style** | Specialized agents coordinated through orchestration, tool wrappers, MCP, and A2A-style communication. |
+| 🧠 **Main model context** | Built around small/local LLM constraints, with decomposition into specialized agents. |
+| 📦 **Main output** | A structured JSON report designed to be consumed by a web application. |
+| ⏱️ **Typical runtime** | Around **8 minutes**, sometimes up to **10 minutes** when retries are needed. |
+| 🧪 **Project type** | Academic demonstration and practical prototype. |
+
+---
+
+## 📚 Table of Contents
+
+- [Overview](#-overview)
+- [Global Pipeline](#-global-pipeline)
+- [Part I — Innovation and Existing Solutions](#-part-i--innovation-and-existing-solutions)
+- [Part II — MVP, Operational Needs, and Legal Compliance](#-part-ii--mvp-operational-needs-and-legal-compliance)
+- [Part III — Financial Analysis and Projection](#-part-iii--financial-analysis-and-projection)
+- [Final Aggregation and Report Generation](#-final-aggregation-and-report-generation)
+- [Challenges and Limitations](#-challenges-and-limitations)
+- [Project Architecture and Execution](#-project-architecture-and-execution)
+- [Results and Evaluation](#-results-and-evaluation)
+- [Script and Folder Reference](#-script-and-folder-reference)
+
+---
+
+# 🧩 Global Pipeline
+
+The system is organized into **four main stages**:
+
+| Stage | Name | Main Question |
+|---|---|---|
+| 🟦 **Part I** | Innovation and existing solutions analysis | Are there already similar companies or solutions? |
+| 🟩 **Part II** | MVP, operational needs, and legal compliance | What would be needed to build and launch the idea? |
+| 🟨 **Part III** | Financial analysis and projection | What could the main costs and revenue assumptions look like? |
+| 🟪 **Part IV** | Final JSON report generation and validation | How can all outputs be merged into one clean web-ready report? |
+
+## 🗺️ Global Architecture
 
 ```mermaid
 flowchart LR
@@ -36,46 +83,74 @@ flowchart LR
     P3 --> F
 
     F --> J[Validated JSON Output]
+
+    classDef input fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0f172a;
+    classDef part1 fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#0f172a;
+    classDef part2 fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#0f172a;
+    classDef part3 fill:#fef9c3,stroke:#ca8a04,stroke-width:2px,color:#0f172a;
+    classDef final fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,color:#0f172a;
+    classDef output fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#0f172a;
+
+    class A input;
+    class P1 part1;
+    class P2 part2;
+    class P3 part3;
+    class F final;
+    class J output;
 ```
 
 ---
 
-# Part I — Innovation and Existing Solutions
+# 🟦 Part I — Innovation and Existing Solutions
 
-The first part of the system evaluates whether a startup idea is innovative and whether similar solutions already exist.
+The first part evaluates whether the startup idea is innovative and whether similar solutions already exist.
 
-Its role is to identify companies that may already be addressing the same problem, understand what they actually do, and determine whether the proposed idea appears original, partially differentiated, or already covered by existing solutions.
+Its role is to:
 
-## Main Logic
+- identify companies that may already address the same problem
+- understand what those companies actually do
+- decide whether the proposed idea is original, partially differentiated, or already represented by existing solutions
+
+## 🎯 What This Stage Produces
+
+| Output | Description |
+|---|---|
+| 🔍 Similar company names | Candidate companies found through the local database and web search. |
+| 🌐 Web-based company descriptions | Short descriptions extracted from relevant webpages. |
+| 🧠 Originality judgment | A final assessment of whether the idea is innovative or already covered. |
+| ⚠️ Uncertainty awareness | Notes when results may be weak, incomplete, or search-dependent. |
+
+## 🧠 Main Logic
 
 This part is built around a **main orchestrator agent** that coordinates several specialized agents.
 
-First, the startup idea is sent to a **semantic retrieval agent**. This agent performs a similarity search over a **PostgreSQL database enhanced with pgvector**. The database contains around **1000 startups in Tunisia**, together with descriptions scraped from the web. Its role is to return the **two most semantically relevant company names** related to the startup idea.
+First, the startup idea is sent to a **semantic retrieval agent**. This agent performs a similarity search over a **PostgreSQL database enhanced with pgvector**. The database contains around **1000 Tunisian startups**, together with descriptions scraped from the web. Its role is to return the **two most semantically relevant company names** related to the startup idea.
 
-In parallel, the orchestrator launches a **web-search branch**. The same startup idea is expressed in **two different formulations** in order to improve retrieval quality. This design choice was introduced because relevant web results can vary significantly depending on the phrasing of the idea. Using two variations increases coverage and helps surface competitors that may be missed by a single formulation.
+In parallel, the orchestrator launches a **web-search branch**. The same startup idea is expressed in **two different formulations** to improve retrieval quality. This design choice was introduced because relevant web results can vary significantly depending on phrasing. Using two variations increases coverage and helps surface competitors that may be missed by a single formulation.
 
-The web-search branch uses **DuckDuckGo**. However, DuckDuckGo was found to be highly inconsistent: identical or nearly identical queries could return different results across runs. To reduce this issue, a **multi-try strategy** was introduced. Instead of relying on a single search, the same request is executed multiple times, and the **top two most relevant results** are retained.
+The web-search branch uses **DuckDuckGo**. However, DuckDuckGo was found to be inconsistent: identical or nearly identical queries could return different results across runs. To reduce this issue, a **multi-try strategy** was introduced. Instead of relying on a single search, the same request is executed multiple times, and the **top two most relevant results** are retained.
 
-The URLs returned by this search process are then passed to a **webpage reader agent**, whose role is to read the pages and extract only the **names of companies** that seem to match the startup idea.
+The URLs returned by this process are passed to a **webpage reader agent**, whose role is to read the pages and extract only the **names of companies** that seem to match the startup idea.
 
 Once candidate company names have been collected from both the semantic branch and the web branch, the system enters a **verification stage**.
 
-In this stage, a first agent searches for the most relevant URLs associated with each company name, again using the same DuckDuckGo multi-try strategy. A second agent then reads the selected webpages using **BeautifulSoup** in order to extract a short description of what each company actually does.
+In this stage, one agent searches for the most relevant URLs associated with each company name, again using the same DuckDuckGo multi-try strategy. Another agent then reads the selected webpages using **BeautifulSoup** to extract a short description of what each company actually does.
 
 Finally, the orchestrator compares all gathered evidence and produces a judgment on whether the startup idea is original, innovative, or already represented by existing solutions.
 
-## Architecture Summary
+## 🧱 Architecture Summary
 
-- Main orchestrator agent
-- Semantic retrieval agent using PostgreSQL + pgvector
-- Local database of ~1000 Tunisian startups with web-scraped descriptions
-- Web search branch using **two different idea formulations**
-- Multi-try DuckDuckGo search to reduce result inconsistency
-- Webpage reader agent for extracting candidate company names
-- Verification stage with URL search + webpage reading
-- Final originality and innovation assessment
+| Component | Role |
+|---|---|
+| 🧭 Main orchestrator agent | Coordinates the whole existing-solutions analysis. |
+| 🗄️ PostgreSQL + pgvector | Stores and searches the local startup database semantically. |
+| 🌐 Web search branch | Searches the web using multiple formulations of the idea. |
+| 🔁 Multi-try DuckDuckGo search | Reduces instability by repeating searches and keeping better results. |
+| 📄 Webpage reader agent | Reads webpages and extracts company names or descriptions. |
+| ✅ Verification stage | Checks candidate company names and validates what they actually do. |
+| 🧠 Final assessment | Produces the originality and innovation judgment. |
 
-## Architecture Diagram
+## 🗺️ Architecture Diagram
 
 ```mermaid
 flowchart TD
@@ -107,68 +182,78 @@ flowchart TD
     B --> F[Company Descriptions]
 
     F --> G[Originality / Innovation Assessment]
+
+    classDef input fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0f172a;
+    classDef agent fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#0f172a;
+    classDef database fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#0f172a;
+    classDef search fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#0f172a;
+    classDef verify fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,color:#0f172a;
+    classDef output fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#0f172a;
+
+    class A input;
+    class O,S,N,U,B agent;
+    class DB database;
+    class W1,W2,D1,D2,R1,R2 search;
+    class S2,C,V,F verify;
+    class G output;
 ```
 
 ---
 
-# Part II — MVP Design, Operational Needs, and Legal Compliance
+# 🟩 Part II — MVP, Operational Needs, and Legal Compliance
 
-The second part of the system focuses on transforming the startup idea into a more concrete and actionable structure.
+The second part transforms the startup idea into a more concrete and actionable structure.
 
 Its objective is to define:
 
-- a first **MVP**
-- the main **operational needs**
-- the most relevant **legal and compliance considerations**
+- 🧩 a first **MVP**
+- 🛠️ the main **operational needs**
+- ⚖️ the most relevant **legal and compliance considerations**
 
-## Main Logic
+## 🎯 What This Stage Produces
+
+| Output | Description |
+|---|---|
+| 🧩 MVP proposal | A first realistic version of the product or service. |
+| 🛠️ Operational needs | Tools, materials, resources, team members, and key roles. |
+| ⚖️ Legal signals | Compliance risks, legal obligations, and early regulatory warnings. |
+| 🧱 Structured planning base | A clearer foundation for thinking about implementation. |
+
+## 🧠 Main Logic
 
 This stage is built around **three specialized agents**:
 
-- an **MVP agent**
-- an **operational needs agent**
-- a **legal compliance agent**
+| Agent | Main Responsibility |
+|---|---|
+| 🧩 MVP agent | Proposes the first usable version of the product. |
+| 🛠️ Operational needs agent | Estimates tools, resources, materials, and team needs. |
+| ⚖️ Legal compliance agent | Identifies important legal and regulatory considerations. |
 
 Each agent relies on its own **JSON knowledge base** made of structured blueprints.
 
 The system first extracts key startup descriptors from the user input, especially the **industry** and the **product type**. These attributes are then used to filter the blueprint collections so that each agent only receives the most relevant templates.
 
-Three knowledge bases are used:
+The three knowledge bases are:
 
-1. **MVP blueprints**
-2. **Operational needs blueprints**
-3. **Legal and compliance blueprints**
+| Knowledge Base | Contents |
+|---|---|
+| 🧩 MVP blueprints | Templates describing possible first versions of products by sector and product category. |
+| 🛠️ Operational needs blueprints | Templates related to tools, materials, resources, team members, and operational roles. |
+| ⚖️ Legal and compliance blueprints | Templates related to compliance requirements, obligations, sector-specific risks, and regulatory concerns. |
 
-The MVP knowledge base contains templates describing what an initial version of a product may look like depending on the sector and product category.
-
-The operational needs knowledge base contains templates related to:
-
-- tools
-- materials
-- resources
-- team members
-- important operational roles
-
-The legal knowledge base contains templates related to:
-
-- compliance requirements
-- legal obligations
-- sector-specific risks
-- regulatory concerns
-
-After filtering, each agent receives the startup idea together with the subset of blueprints that best matches the selected **industry** and **product type**. Each agent then tries to align the startup concept with the blueprint structure it has been given.
+After filtering, each agent receives the startup idea together with the subset of blueprints that best matches the selected **industry** and **product type**. Each agent then aligns the startup concept with the blueprint structure it has been given.
 
 This makes the second part less dependent on free generation and more grounded in structured prior knowledge.
 
-## Agent Roles
+## 🤖 Agent Roles
 
-### MVP Agent
+### 🧩 MVP Agent
 
 The MVP agent proposes what the first realistic version of the startup’s product should look like.
 
 Its objective is to identify the minimum core features and essential components required to launch an initial usable product.
 
-### Operational Needs Agent
+### 🛠️ Operational Needs Agent
 
 The operational needs agent estimates what is required to move from concept to implementation.
 
@@ -180,22 +265,27 @@ This includes:
 - team composition
 - key roles
 
-### Legal Compliance Agent
+### ⚖️ Legal Compliance Agent
 
 The legal compliance agent identifies important legal and regulatory points linked to the startup’s activity.
 
-Its role is not to replace a legal expert, but to provide an early warning layer and make the user aware of important compliance questions from the beginning.
+> [!WARNING]
+> This legal layer is **not a replacement for a legal expert**.  
+> It is an early warning system that helps the user become aware of compliance questions from the beginning.
 
-## Architecture Summary
+## 🧱 Architecture Summary
 
-- Input uses startup idea + industry + product type
-- Three JSON knowledge bases
-- One agent per domain: MVP, operations, legal
-- Blueprint filtering based on industry and product type
-- Each agent matches the startup idea against relevant structured templates
-- Final output combines product design, needs, and compliance awareness
+| Component | Role |
+|---|---|
+| 📝 Startup idea | Main user input. |
+| 🏷️ Industry + product type | Used to select relevant blueprints. |
+| 🧱 Blueprint filtering layer | Filters knowledge bases before sending data to agents. |
+| 🧩 MVP agent | Produces the first product version. |
+| 🛠️ Operational needs agent | Produces tools, resources, team, and material needs. |
+| ⚖️ Legal compliance agent | Produces legal and compliance awareness notes. |
+| 📦 Structured output | Combines product design, operations, and legal signals. |
 
-## Architecture Diagram
+## 🗺️ Architecture Diagram
 
 ```mermaid
 flowchart TD
@@ -220,17 +310,40 @@ flowchart TD
     R1 --> Z[Part II Structured Output]
     R2 --> Z
     R3 --> Z
+
+    classDef input fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0f172a;
+    classDef filter fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#0f172a;
+    classDef mvp fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#0f172a;
+    classDef ops fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#0f172a;
+    classDef legal fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#0f172a;
+    classDef output fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,color:#0f172a;
+
+    class A input;
+    class F filter;
+    class M1,M2,R1 mvp;
+    class O1,O2,R2 ops;
+    class L1,L2,R3 legal;
+    class Z output;
 ```
 
 ---
 
-# Part III — Financial Analysis and Projection
+# 🟨 Part III — Financial Analysis and Projection
 
-The third part of the system is the most agentic component of the architecture.
+The third part is the most agentic component of the architecture.
 
 Its goal is to build a structured financial analysis by progressively filling a predefined output format.
 
-## Main Logic
+## 🎯 What This Stage Produces
+
+| Output | Description |
+|---|---|
+| 💸 Cost estimates | Startup expenses such as salaries, tools, infrastructure, and operations. |
+| 📈 Revenue assumptions | Revenue scenarios based on calculations and supporting market information. |
+| 🔎 Web-supported information | Additional market, pricing, or cost information found online. |
+| 🧠 Completed financial structure | A filled financial output format with assumptions and uncertainty notes. |
+
+## 🧠 Main Logic
 
 At the center of this stage is a **main financial agent**.
 
@@ -238,17 +351,20 @@ This agent is not a passive task dispatcher. It actively reasons over the expect
 
 The main financial agent has access to:
 
-- a **cost estimation agent**
-- a **revenue estimation agent**
-- a **web research agent**
+| Worker Agent | Responsibility |
+|---|---|
+| 💸 Cost estimation agent | Estimates startup expenses. |
+| 📈 Revenue estimation agent | Estimates possible revenue scenarios. |
+| 🔎 Web research agent | Searches for additional information when local knowledge is not enough. |
 
 The main agent sends requests to worker agents, evaluates their responses, detects missing fields, and adapts its strategy until the output format is filled.
 
 If a worker agent reports missing information, the main agent tries to provide that missing context itself. If a response is weak or incomplete, it retries using refined instructions. If the worker agents do not provide enough useful information, the main agent can perform web research on its own.
 
-This is what makes this module the most agentic one: the intelligence lies in the **reasoning behavior of the main financial agent**, not in a simple fixed pipeline.
+> [!NOTE]
+> This is the most agentic module because the intelligence lies in the **reasoning behavior of the main financial agent**, not in a simple fixed pipeline.
 
-## Cost Estimation Agent
+## 💸 Cost Estimation Agent
 
 The cost estimation agent estimates startup expenses.
 
@@ -262,7 +378,7 @@ Its outputs may include estimates related to:
 - operations
 - other major startup costs
 
-## Revenue Estimation Agent
+## 📈 Revenue Estimation Agent
 
 The revenue estimation agent estimates potential revenue.
 
@@ -270,9 +386,9 @@ It has access to **math-function tools** for calculations and projections, and i
 
 Its role is to generate revenue scenarios based on assumptions, calculations, and available evidence.
 
-## Web Research Agent
+## 🔎 Web Research Agent
 
-The web research agent itself follows a multi-step internal process.
+The web research agent follows a multi-step internal process.
 
 When asked to find information, it does not rely on a single query. Instead, it:
 
@@ -284,29 +400,20 @@ When asked to find information, it does not rely on a single query. Instead, it:
 
 This makes research more robust than a simple one-shot search.
 
-## Agentic Reasoning Behavior
+## 🔁 Agentic Reasoning Behavior
 
 The main financial agent continuously tries to complete the expected structure by:
 
-- checking which fields are still missing
-- asking worker agents for specific information
-- refining requests when answers are incomplete
-- adding missing context when workers need more input
-- retrying when results are not sufficient
-- using web search on its own when necessary
+| Behavior | Purpose |
+|---|---|
+| ✅ Checking missing fields | Detects what still needs to be completed. |
+| 🎯 Asking targeted questions | Sends specific requests to worker agents. |
+| ✍️ Refining requests | Improves weak or incomplete instructions. |
+| 🧩 Adding missing context | Helps worker agents when they lack information. |
+| 🔁 Retrying | Repeats tasks when outputs are insufficient. |
+| 🌐 Using web search | Searches directly when worker outputs are not enough. |
 
-## Architecture Summary
-
-- One main financial agent responsible for filling the final financial structure
-- One cost estimation agent
-- One revenue estimation agent
-- One web research agent
-- Cost agent uses a local approximation database + web research
-- Revenue agent uses math tools + web research
-- Main agent retries, reformulates, and fills missing information dynamically
-- Web research uses multi-query generation, webpage reading, and retry logic
-
-## Architecture Diagram
+## 🗺️ Architecture Diagram
 
 ```mermaid
 flowchart TD
@@ -348,35 +455,59 @@ flowchart TD
     M2 --> W
 
     Z -- No --> O[Completed Financial Output]
+
+    classDef input fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0f172a;
+    classDef manager fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#0f172a;
+    classDef cost fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#0f172a;
+    classDef revenue fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#0f172a;
+    classDef research fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#0f172a;
+    classDef tools fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,color:#0f172a;
+    classDef output fill:#ccfbf1,stroke:#0f766e,stroke-width:2px,color:#0f172a;
+
+    class A input;
+    class M,F,Z,M2 manager;
+    class C,DB,C2 cost;
+    class R,T,R2 revenue;
+    class W,Q,S,U,P,X,Y research;
+    class O output;
 ```
 
 ---
 
-# Final Aggregation and Report Generation
+# 🟪 Final Aggregation and Report Generation
 
 After the three main parts have produced their outputs, the whole result is passed to a **large language model** responsible for generating the final report in **JSON format**.
 
-This model has access to the outputs of all previous stages, which gives it a broader view of the complete startup analysis.
+This model has access to:
 
-Its **main role** is to prepare a clean JSON object that can be directly consumed by the web application.
+- the initial user input
+- the output of Part I
+- the output of Part II
+- the output of Part III
 
-Because it sees the full picture, it also acts as a **validation layer**. It can detect inconsistencies, mention contradictions, and point out missing elements across sections. However, its primary function is still **final report preparation**, not deep re-analysis.
+Because it sees the full picture, it acts as both a **report builder** and a light **validation layer**.
 
-## Final Role of the Large Language Model
+## 🎯 Final Role of the Large Language Model
 
-- Collect outputs from Part I, Part II, and Part III
-- Organize the full result into a structured JSON format
-- Detect inconsistencies across sections
-- Highlight missing or contradictory information
-- Produce a final web-ready JSON report
+| Responsibility | Description |
+|---|---|
+| 📥 Collect outputs | Receives outputs from the three main analysis parts. |
+| 🧹 Clean structure | Organizes results into a clean JSON object. |
+| 🔍 Detect inconsistencies | Identifies contradictions across sections. |
+| ⚠️ Highlight weak information | Signals missing, uncertain, or untrustworthy information. |
+| 🌐 Prepare web output | Produces a JSON report that can be consumed by the web application. |
+
+> [!IMPORTANT]
+> The final model’s primary function is **final report preparation**, not deep re-analysis.  
+> It improves consistency and structure, but it does not magically make weak upstream information fully reliable.
 
 ---
 
-# Challenges and Limitations
+# ⚠️ Challenges and Limitations
 
-Building this system involved several practical difficulties, most of them linked to **small local language models** and **unstable web retrieval**.
+Building this system involved several practical difficulties, mostly linked to **small local language models** and **unstable web retrieval**.
 
-## Working with a Small Language Model
+## 🧠 Working with a Small Language Model
 
 One of the first major difficulties was model choice.
 
@@ -384,28 +515,30 @@ The project initially started with **Qwen 2.5 7B**, but obtaining stable and use
 
 Even with that improvement, the project still relied on a relatively small model. This introduced two main constraints:
 
-- limited reasoning robustness compared to larger models
-- limited context-window capacity
+| Constraint | Effect |
+|---|---|
+| Limited reasoning robustness | The model needed more structure and guidance than a larger model. |
+| Limited context window | The workflow had to be divided into smaller agents and stages. |
 
-Because of these constraints, a large amount of **prompt engineering** was required, and the overall workflow had to be divided into multiple agents and multiple parts. This decomposition was therefore both an architectural choice and a practical workaround.
+Because of these constraints, a large amount of **prompt engineering** was required, and the overall workflow had to be divided into multiple agents and multiple parts. This decomposition was both an architectural choice and a practical workaround.
 
-## Transition from Script-Based Agents to MCP / A2A Protocols
+## 🔌 Transition from Script-Based Agents to MCP / A2A Protocols
 
 Another challenge appeared when moving from a simpler implementation to a protocol-based architecture.
 
 At first, the different parts were built mainly as direct scripts using **LangGraph** and **LangChain**, and the system could already produce fairly good results.
 
-Later, when the architecture was migrated to **MCP** and **A2A**, the quality dropped somewhat. The main reason was that these protocols introduce extra metadata such as:
+Later, when the architecture was migrated to **MCP** and **A2A**, quality dropped somewhat. The main reason was that these protocols introduce extra metadata such as:
 
 - role descriptions
 - agent cards
 - communication formatting
 
-While useful from a systems perspective, this extra metadata was not very helpful for a **small local LLM with limited context**. Some of the model’s capacity was being consumed by protocol-related structure instead of the core reasoning task.
+While useful from a systems perspective, this extra metadata was not very helpful for a **small local LLM with limited context**. Some of the model’s capacity was consumed by protocol-related structure instead of the core reasoning task.
 
 To reduce this issue, adjustments were made so that agents would receive information as close as possible to what they had received before the MCP / A2A transition. Even so, protocol overhead remained a real limitation.
 
-## DuckDuckGo Search Inconsistency
+## 🌐 DuckDuckGo Search Inconsistency
 
 The biggest practical issue in the project was the instability of **DuckDuckGo search results**.
 
@@ -415,9 +548,9 @@ To reduce this effect, a **multi-try strategy** was introduced. Instead of relyi
 
 This improved robustness, but did not fully solve the issue. DuckDuckGo still does not guarantee that the webpage actually needed will appear within the early retrieved results.
 
-## Context-Window Constraints in Web Processing
+## 📏 Context-Window Constraints in Web Processing
 
-This problem became even harder because the agents were operating under small context-window limits.
+This problem became harder because the agents were operating under small context-window limits.
 
 Even when many potentially useful pages were available, the system could not process an unlimited number of webpages. This created a tradeoff between:
 
@@ -426,46 +559,55 @@ Even when many potentially useful pages were available, the system could not pro
 
 As a result, some relevant sources may still be missed.
 
-## Summary of Main Difficulties
+## 🧾 Summary of Main Difficulties
 
-The main challenges can be summarized as follows:
-
-- limits of small local language models
-- heavy prompt engineering requirements
-- need to decompose the system into several agents and parts
-- quality loss after moving from direct scripts to MCP / A2A
-- protocol metadata consuming valuable context space
-- high inconsistency in DuckDuckGo search
-- inability to process too many webpages because of context limits
+| Difficulty | Impact |
+|---|---|
+| 🧠 Small local language models | Required decomposition, prompt engineering, and more controlled workflows. |
+| 📏 Limited context windows | Restricted how much web content could be processed. |
+| 🔌 MCP / A2A protocol overhead | Added metadata that consumed valuable context space. |
+| 🌐 DuckDuckGo inconsistency | Made web-based retrieval unstable across runs. |
+| 🔁 Need for retries | Increased runtime but improved result robustness. |
+| 🇹🇳 Limited structured Tunisian data | Made reliable local startup and market research more difficult. |
 
 These constraints strongly shaped the final design of the project.
 
 ---
 
-# Project Architecture and Execution
+# 🛠️ Project Architecture and Execution
 
-## Architecture Overview
+## 🧱 Architecture Overview
 
 The system runs as a multi-agent pipeline supported by both **MCP** and **A2A** communication servers.
 
 The main execution flow relies on the following core scripts:
 
-- `exist_sol_ag.py`
-- `final_startup_report_pipeline.py`
-- `manager_ag.py`
-- `final_reporter.py`
+| Script | Role |
+|---|---|
+| `exist_sol_ag.py` | Runs the existing-solutions and innovation analysis. |
+| `final_startup_report_pipeline.py` | Runs the MVP, operations, and legal analysis. |
+| `manager_ag.py` | Runs the financial analysis manager. |
+| `final_reporter.py` | Generates the final JSON report. |
 
-These scripts are launched according to the startup input stored in `user_input.json`.
+These scripts are launched according to the startup input stored in:
+
+```text
+user_input.json
+```
 
 The project can be used in three ways:
 
-1. by running the full pipeline automatically
-2. by launching the scripts individually
-3. by using the Streamlit web interface
+| Mode | Description |
+|---|---|
+| 🚀 Full pipeline | Run the complete process automatically. |
+| 🧪 Individual scripts | Run parts independently for testing or debugging. |
+| 🖥️ Streamlit interface | Use the project through a simple web dashboard. |
 
-## How to Run the Project
+---
 
-First, create and activate a virtual environment, then install the dependencies from `requirements.txt`.
+## ⚙️ Installation
+
+Create and activate a virtual environment, then install the dependencies from `requirements.txt`.
 
 ```bash
 python -m venv .venv
@@ -473,23 +615,40 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Then start the two servers in **two separate terminals**:
+> [!NOTE]
+> On Windows, virtual environment activation may look different:
+>
+> ```bash
+> .venv\Scripts\activate
+> ```
+
+---
+
+## ▶️ Running the Full Pipeline
+
+Start the two servers in **two separate terminals**.
+
+### Terminal 1 — MCP Server
 
 ```bash
 python mcp_server.py
 ```
 
+### Terminal 2 — A2A Server
+
 ```bash
 python a2a_server.py
 ```
 
-Once both servers are running, launch the full pipeline:
+### Terminal 3 — Pipeline Runner
 
 ```bash
 python run_pipeline.py
 ```
 
-## Input Configuration
+---
+
+## 📝 Input Configuration
 
 The main input file is:
 
@@ -497,20 +656,32 @@ The main input file is:
 user_input.json
 ```
 
-You can modify this file freely depending on the startup idea, industry, product type, or any other configuration you want to test.
+You can modify this file depending on the startup idea, industry, product type, or any other configuration you want to test.
 
-## Alternative Execution Modes
+---
 
-You can also run the main scripts individually for testing or debugging purposes:
+## 🧪 Alternative Execution Modes
 
-- `exist_sol_ag.py`
-- `final_startup_report_pipeline.py`
-- `manager_ag.py`
-- `final_reporter.py`
+You can also run the main scripts individually for testing or debugging:
 
-All generated outputs are saved in the `outputs/` folder, and the detailed activity of the agents can be observed directly in the terminal.
+```bash
+python exist_sol_ag.py
+python final_startup_report_pipeline.py
+python manager_ag.py
+python final_reporter.py
+```
 
-## Streamlit Dashboard
+All generated outputs are saved in:
+
+```text
+outputs/
+```
+
+The detailed activity of the agents can be observed directly in the terminal.
+
+---
+
+## 🖥️ Streamlit Dashboard
 
 The project can also be launched through a Streamlit interface:
 
@@ -520,24 +691,41 @@ streamlit run app.py
 
 This provides a cleaner dashboard where the user can enter startup inputs, launch the pipeline, and inspect the final result more comfortably.
 
-## Execution Time
+---
 
-A full run of the complete process takes approximately **8 minutes**, and may sometimes reach **10 minutes** when agents need extra retries to gather enough information.
+## ⏱️ Execution Time
+
+A full run of the complete process usually takes approximately:
+
+```text
+8 minutes
+```
+
+In some cases, it may reach:
+
+```text
+10 minutes
+```
+
+This usually happens when agents need extra retries to gather enough information.
 
 ---
 
-# Results and Evaluation
+# 📊 Results and Evaluation
 
 The overall quality of the system’s results can be estimated at around **7.5/10** on average.
 
-In practice:
+| Run Quality | Approximate Score |
+|---|---|
+| Weaker run | 7/10 |
+| Average run | 7.5/10 |
+| Strong run | 8/10 to 8.5/10 |
 
-- some runs may produce results closer to **7/10**
-- stronger runs may reach **8/10** or even **8.5/10**
+> [!CAUTION]
+> This system should not be treated as a final source of truth.  
+> It is an approximation and guidance tool designed to support early thinking and research.
 
-It is important to note that this system was **not designed to be a perfectly accurate decision-maker**. Its purpose is to act as an **approximation and guidance tool** rather than a final source of truth.
-
-For this reason, the pipeline was designed to explicitly mention when information is:
+The pipeline was designed to explicitly mention when information is:
 
 - uncertain
 - inconsistent
@@ -549,81 +737,146 @@ Even with these limitations, the system remains useful. Its main value is that i
 
 Its weaknesses are also similar to those a human would face during manual research. Finding reliable information on the web is difficult in general, and especially difficult in the Tunisian context, where structured and accessible information is often limited.
 
-As a result, the system is especially useful as:
+## ✅ Best Use Cases
 
-- a time-saving tool
-- an early approximation system
-- a structured reflection assistant
-- an awareness tool for startup planning
+This system is especially useful as:
+
+| Use Case | Why It Helps |
+|---|---|
+| ⏱️ Time-saving tool | Quickly gathers and structures information. |
+| 🧭 Early approximation system | Helps users form an initial direction. |
+| 🧠 Structured reflection assistant | Forces the user to consider innovation, operations, legal risks, and finance. |
+| ⚠️ Awareness tool | Highlights missing, uncertain, or risky areas. |
 
 It may be particularly helpful for:
 
 - younger users
 - first-time founders
-- people who are not yet familiar with business planning
+- people unfamiliar with business planning
 - users with limited knowledge of MVP design, operational planning, finance, or legal issues
 
 Even when the output is not perfectly precise, it still gives the user a much clearer global view of the idea and highlights the main aspects that need to be considered before moving forward.
 
 ---
 
-# Script and Folder Reference
+# 📁 Script and Folder Reference
 
-This section gives a practical map of the main scripts and folders in the repository. Some files are part of the final execution flow, while others are helper scripts or standalone testing scripts that were used during development.
+This section gives a practical map of the main scripts and folders in the repository.
 
-## Main Execution Files
+> [!NOTE]
+> Not every script is used in the final pipeline.  
+> Some scripts are standalone testing files used during development.
 
-- `run_pipeline.py` is the script used to run the main pipeline scripts in the correct order. It also prints command-line progress information and includes a timer to show how long the full execution takes.
-- `user_input.json` contains an example user input. It is useful for testing the pipeline when running the scripts manually or independently.
-- `app.py` is a simple Streamlit application used to test the system through a web interface instead of only using the terminal.
-- `requirements.txt` contains the Python dependencies used in the environment. It was generated as a simple `pip freeze` file.
+---
 
-## MCP and A2A Communication Layer
+## 🚀 Main Execution Files
 
-- `mcp_server.py` starts the MCP server. It should be run in a separate terminal when using the protocol-based version of the system.
-- `a2a_server.py` starts the A2A server. It should also be run in a separate terminal, alongside the MCP server.
-- `mcp_tool_wrappers.py` provides the wrapper layer that receives tool calls from agents and adapts them so they can work through the MCP protocol.
-- `a2a_tool_wrappers.py` provides the wrapper layer that receives tool calls from agents and adapts them so they can work through the A2A protocol.
-- `shared/` contains shared configuration files and clients used by the MCP and A2A communication layers.
+| File | Purpose |
+|---|---|
+| `run_pipeline.py` | Runs the main pipeline scripts in the correct order, prints command-line progress, and includes a timer for the full execution. |
+| `user_input.json` | Contains an example user input. Useful for testing the pipeline manually or independently. |
+| `app.py` | Simple Streamlit application used to test the system through a web interface instead of only using the terminal. |
+| `requirements.txt` | Contains the Python dependencies used in the environment. It was generated as a simple `pip freeze` file. |
 
-## Part I - Existing Solutions and Innovation Analysis
+---
 
-- `exist_sol_ag.py` is the main agent of the first part. It orchestrates the existing-solutions search by looking for similar companies both in the local database and on the web. For each company name found, it searches for more information and produces a final judgment about whether the startup idea is innovative or whether similar solutions already exist.
-- `tools.py` and `tools1.py` contain the tool definitions used mainly by the first part of the system. Because the local model is relatively small but efficient at using tools, many agent actions are wrapped as tool calls. This makes it possible to keep using the agents inside A2A and MCP-style communication while improving the stability of the results.
-- `search_web_results_ag.py` is an agent that searches for relevant URLs using a description of the startup idea. It chooses the best matching results, uses `extract_company_names_from_url` to extract company names, and then uses `describe_company_from_url` to verify them. Its final goal is to return the best matching company names.
-- `search_company_ag.py` is an agent used during the existing-solutions analysis. Given a company name, it searches the web for relevant URLs, uses `get_company_description_from_url` to read and understand the results, and returns the most likely matching company description.
-- `company_name_extractor_ag.py` is an agent that receives webpage content and the startup description, then extracts company names that appear to match the startup idea. This is useful because many webpages are either company pages or list pages containing several company names.
-- `company_description_short_ag.py` is a helper agent that reads a company webpage and returns a short description of what the company does.
-- `company_description_clear_ag.py` is a helper agent that reads a company webpage and returns a clearer, more detailed factual description of what the company does.
+## 🔌 MCP and A2A Communication Layer
 
-## Part II - MVP, Operational Needs, and Legal Signals
+| File / Folder | Purpose |
+|---|---|
+| `mcp_server.py` | Starts the MCP server. It should be run in a separate terminal when using the protocol-based version of the system. |
+| `a2a_server.py` | Starts the A2A server. It should also be run in a separate terminal, alongside the MCP server. |
+| `mcp_tool_wrappers.py` | Provides the wrapper layer that receives tool calls from agents and adapts them so they can work through the MCP protocol. |
+| `a2a_tool_wrappers.py` | Provides the wrapper layer that receives tool calls from agents and adapts them so they can work through the A2A protocol. |
+| `shared/` | Contains shared configuration files and clients used by the MCP and A2A communication layers. |
 
-- `final_startup_report_pipeline.py` integrates the three agents of the second part so they can run together and produce the MVP, operational needs, and legal/compliance outputs.
-- `mvp_builder_agent_test.py` is a standalone testing script for the MVP builder agent. It was used to test the MVP results before integration into the full second-part pipeline.
-- `ops_needs_agent_test.py` is a standalone testing script for the operational needs agent. It was used to test the tools, materials, resources, and team needs output before integration.
-- `legal_signals_agent_test.py` is a standalone testing script for the legal signals agent. It was used to test the legal and compliance output before integration.
-- `knowledge/` contains the blueprint knowledge bases used by the second-part agents. These blueprints support the MVP, operational needs, and legal/compliance agents.
-- `mvp_needs/` contains additional testing scripts related to the MVP and needs part of the project.
+---
 
-## Part III - Financial Analysis
+## 🟦 Part I — Existing Solutions and Innovation Analysis
 
-- `manager_ag.py` is the main agent of the financial part. It coordinates the cost agent, revenue agent, and web research agent through natural-language tasks and context. It manages missing information, errors, and retries, with the final goal of filling a structured financial output format.
-- `cost_ag.py` is one of the main financial agents. It receives a task and context, then estimates how much different parts of the startup may cost. It has access to a local knowledge base with general cost information and can ask a web research agent for additional information when needed.
-- `revenue_ag.py` is one of the main financial agents. It receives a task and supporting information, uses math tools to perform calculations, and can ask a web research agent to search for additional market or pricing information.
-- `research_ag.py` is a web research agent that works from tasks. It generates multiple search queries, sends webpage results to a reader agent, retries with different queries or pages when needed, and returns the information requested by the task.
-- `webpage_reader_ag.py` is an agent used in the financial analysis part. Its job is to read the content of a webpage and return the specific information requested from it.
-- `finance_knowledge/` contains the financial knowledge base used especially by the cost agent. It stores general cost references and approximate information used during financial estimation.
+| File | Purpose |
+|---|---|
+| `exist_sol_ag.py` | Main agent of the first part. It orchestrates the existing-solutions search by looking for similar companies both in the local database and on the web. It then produces a judgment about whether the startup idea is innovative or whether similar solutions already exist. |
+| `tools.py` | Contains tool definitions used mainly by the first part of the system. |
+| `tools1.py` | Contains additional or alternative tool definitions used mainly by the first part. |
+| `search_web_results_ag.py` | Searches for relevant URLs using a description of the startup idea. It selects the best matching results, extracts company names, verifies them, and returns the best matches. |
+| `search_company_ag.py` | Given a company name, searches the web for relevant URLs, reads the results, and returns the most likely matching company description. |
+| `company_name_extractor_ag.py` | Receives webpage content and the startup description, then extracts company names that appear to match the startup idea. |
+| `company_description_short_ag.py` | Helper agent that reads a company webpage and returns a short description of what the company does. |
+| `company_description_clear_ag.py` | Helper agent that reads a company webpage and returns a clearer, more detailed factual description of what the company does. |
 
-## Final Report Generation
+> [!TIP]
+> A key trick in this part is wrapping many agent actions as tools.  
+> Because the local model is relatively small but good at tool use, this helped improve stability while still allowing the system to work through A2A and MCP-style protocols.
 
-- `final_reporter.py` is the final reporting agent. It uses a larger language model with a bigger context window. It receives the initial user input and the outputs of the previous agents, then generates the final report in JSON format for use in the web application. It also checks for uncertain, inconsistent, or untrustworthy information and signals it in the output.
+---
 
-## Outputs and Intermediate Data
+## 🟩 Part II — MVP, Operational Needs, and Legal Signals
 
-- `outputs/` is the folder where generated results are saved when the full pipeline runs. The scripts use this folder to store outputs and, in some cases, communicate results between different stages of the system.
-- `ops_output.json` is an output file related to the operational-needs part of the system. It is not a main pipeline script, but it can be useful for inspecting or testing intermediate results.
+| File / Folder | Purpose |
+|---|---|
+| `final_startup_report_pipeline.py` | Integrates the three agents of the second part so they can run together and produce the MVP, operational needs, and legal/compliance outputs. |
+| `mvp_builder_agent_test.py` | Standalone testing script for the MVP builder agent. Used before integration into the full second-part pipeline. |
+| `ops_needs_agent_test.py` | Standalone testing script for the operational needs agent. Used to test tools, materials, resources, and team-needs output. |
+| `legal_signals_agent_test.py` | Standalone testing script for the legal signals agent. Used to test legal and compliance output before integration. |
+| `knowledge/` | Contains the blueprint knowledge bases used by the second-part agents. These support the MVP, operational needs, and legal/compliance agents. |
+| `mvp_needs/` | Contains additional testing scripts related to the MVP and needs part of the project. |
 
-## Other Folders
+---
 
-The repository also contains additional folders such as `examples/`, `exist_sol_two_server_a2a_mcp/`, and `finance_two_server_a2a_mcp/`. These are not required to understand the main final pipeline described in this README and can be ignored for the main explanation.
+## 🟨 Part III — Financial Analysis
 
+| File / Folder | Purpose |
+|---|---|
+| `manager_ag.py` | Main agent of the financial part. It coordinates the cost agent, revenue agent, and web research agent through natural-language tasks and context. It manages missing information, errors, and retries, with the final goal of filling a structured financial output format. |
+| `cost_ag.py` | Main financial agent for cost estimation. It receives a task and context, then estimates how much different parts of the startup may cost. It uses a local knowledge base and can ask a web research agent for additional information. |
+| `revenue_ag.py` | Main financial agent for revenue estimation. It receives a task and supporting information, uses math tools to perform calculations, and can ask a web research agent to search for additional market or pricing information. |
+| `research_ag.py` | Web research agent that works from tasks. It generates multiple search queries, sends webpage results to a reader agent, retries with different queries or pages when needed, and returns the requested information. |
+| `webpage_reader_ag.py` | Agent used in the financial analysis part. Its job is to read webpage content and return the specific information requested from it. |
+| `finance_knowledge/` | Contains the financial knowledge base used especially by the cost agent. It stores general cost references and approximate information used during financial estimation. |
+
+---
+
+## 🟪 Final Report Generation
+
+| File | Purpose |
+|---|---|
+| `final_reporter.py` | Final reporting agent. It uses a larger language model with a bigger context window. It receives the initial user input and all previous outputs, then generates the final JSON report for the web application. It also checks for uncertain, inconsistent, or untrustworthy information and signals it in the output. |
+
+---
+
+## 📦 Outputs and Intermediate Data
+
+| File / Folder | Purpose |
+|---|---|
+| `outputs/` | Folder where generated results are saved when the full pipeline runs. Scripts use this folder to store outputs and sometimes communicate results between different stages. |
+| `ops_output.json` | Output file related to the operational-needs part of the system. It is not a main pipeline script, but it can be useful for inspecting or testing intermediate results. |
+
+---
+
+## 🗂️ Other Folders
+
+The repository also contains additional folders such as:
+
+- `examples/`
+- `exist_sol_two_server_a2a_mcp/`
+- `finance_two_server_a2a_mcp/`
+
+These are not required to understand the main final pipeline described in this README and can be ignored for the main explanation.
+
+---
+
+# ✅ Final Note
+
+This project shows how a startup idea can be evaluated using a coordinated group of specialized agents rather than a single monolithic prompt.
+
+The main value of the system is not perfect accuracy. Its value is that it:
+
+- structures the user’s idea
+- accelerates early research
+- highlights similar solutions
+- proposes MVP and operational needs
+- estimates financial assumptions
+- signals uncertainty instead of hiding it
+
+That makes it useful as a first serious startup reflection tool, especially for early-stage founders or students exploring business ideas.
