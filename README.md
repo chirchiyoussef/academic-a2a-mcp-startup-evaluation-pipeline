@@ -564,3 +564,66 @@ It may be particularly helpful for:
 - users with limited knowledge of MVP design, operational planning, finance, or legal issues
 
 Even when the output is not perfectly precise, it still gives the user a much clearer global view of the idea and highlights the main aspects that need to be considered before moving forward.
+
+---
+
+# Script and Folder Reference
+
+This section gives a practical map of the main scripts and folders in the repository. Some files are part of the final execution flow, while others are helper scripts or standalone testing scripts that were used during development.
+
+## Main Execution Files
+
+- `run_pipeline.py` is the script used to run the main pipeline scripts in the correct order. It also prints command-line progress information and includes a timer to show how long the full execution takes.
+- `user_input.json` contains an example user input. It is useful for testing the pipeline when running the scripts manually or independently.
+- `app.py` is a simple Streamlit application used to test the system through a web interface instead of only using the terminal.
+- `requirements.txt` contains the Python dependencies used in the environment. It was generated as a simple `pip freeze` file.
+
+## MCP and A2A Communication Layer
+
+- `mcp_server.py` starts the MCP server. It should be run in a separate terminal when using the protocol-based version of the system.
+- `a2a_server.py` starts the A2A server. It should also be run in a separate terminal, alongside the MCP server.
+- `mcp_tool_wrappers.py` provides the wrapper layer that receives tool calls from agents and adapts them so they can work through the MCP protocol.
+- `a2a_tool_wrappers.py` provides the wrapper layer that receives tool calls from agents and adapts them so they can work through the A2A protocol.
+- `shared/` contains shared configuration files and clients used by the MCP and A2A communication layers.
+
+## Part I - Existing Solutions and Innovation Analysis
+
+- `exist_sol_ag.py` is the main agent of the first part. It orchestrates the existing-solutions search by looking for similar companies both in the local database and on the web. For each company name found, it searches for more information and produces a final judgment about whether the startup idea is innovative or whether similar solutions already exist.
+- `tools.py` and `tools1.py` contain the tool definitions used mainly by the first part of the system. Because the local model is relatively small but efficient at using tools, many agent actions are wrapped as tool calls. This makes it possible to keep using the agents inside A2A and MCP-style communication while improving the stability of the results.
+- `search_web_results_ag.py` is an agent that searches for relevant URLs using a description of the startup idea. It chooses the best matching results, uses `extract_company_names_from_url` to extract company names, and then uses `describe_company_from_url` to verify them. Its final goal is to return the best matching company names.
+- `search_company_ag.py` is an agent used during the existing-solutions analysis. Given a company name, it searches the web for relevant URLs, uses `get_company_description_from_url` to read and understand the results, and returns the most likely matching company description.
+- `company_name_extractor_ag.py` is an agent that receives webpage content and the startup description, then extracts company names that appear to match the startup idea. This is useful because many webpages are either company pages or list pages containing several company names.
+- `company_description_short_ag.py` is a helper agent that reads a company webpage and returns a short description of what the company does.
+- `company_description_clear_ag.py` is a helper agent that reads a company webpage and returns a clearer, more detailed factual description of what the company does.
+
+## Part II - MVP, Operational Needs, and Legal Signals
+
+- `final_startup_report_pipeline.py` integrates the three agents of the second part so they can run together and produce the MVP, operational needs, and legal/compliance outputs.
+- `mvp_builder_agent_test.py` is a standalone testing script for the MVP builder agent. It was used to test the MVP results before integration into the full second-part pipeline.
+- `ops_needs_agent_test.py` is a standalone testing script for the operational needs agent. It was used to test the tools, materials, resources, and team needs output before integration.
+- `legal_signals_agent_test.py` is a standalone testing script for the legal signals agent. It was used to test the legal and compliance output before integration.
+- `knowledge/` contains the blueprint knowledge bases used by the second-part agents. These blueprints support the MVP, operational needs, and legal/compliance agents.
+- `mvp_needs/` contains additional testing scripts related to the MVP and needs part of the project.
+
+## Part III - Financial Analysis
+
+- `manager_ag.py` is the main agent of the financial part. It coordinates the cost agent, revenue agent, and web research agent through natural-language tasks and context. It manages missing information, errors, and retries, with the final goal of filling a structured financial output format.
+- `cost_ag.py` is one of the main financial agents. It receives a task and context, then estimates how much different parts of the startup may cost. It has access to a local knowledge base with general cost information and can ask a web research agent for additional information when needed.
+- `revenue_ag.py` is one of the main financial agents. It receives a task and supporting information, uses math tools to perform calculations, and can ask a web research agent to search for additional market or pricing information.
+- `research_ag.py` is a web research agent that works from tasks. It generates multiple search queries, sends webpage results to a reader agent, retries with different queries or pages when needed, and returns the information requested by the task.
+- `webpage_reader_ag.py` is an agent used in the financial analysis part. Its job is to read the content of a webpage and return the specific information requested from it.
+- `finance_knowledge/` contains the financial knowledge base used especially by the cost agent. It stores general cost references and approximate information used during financial estimation.
+
+## Final Report Generation
+
+- `final_reporter.py` is the final reporting agent. It uses a larger language model with a bigger context window. It receives the initial user input and the outputs of the previous agents, then generates the final report in JSON format for use in the web application. It also checks for uncertain, inconsistent, or untrustworthy information and signals it in the output.
+
+## Outputs and Intermediate Data
+
+- `outputs/` is the folder where generated results are saved when the full pipeline runs. The scripts use this folder to store outputs and, in some cases, communicate results between different stages of the system.
+- `ops_output.json` is an output file related to the operational-needs part of the system. It is not a main pipeline script, but it can be useful for inspecting or testing intermediate results.
+
+## Other Folders
+
+The repository also contains additional folders such as `examples/`, `exist_sol_two_server_a2a_mcp/`, and `finance_two_server_a2a_mcp/`. These are not required to understand the main final pipeline described in this README and can be ignored for the main explanation.
+
